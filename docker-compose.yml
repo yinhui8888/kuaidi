@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  app:
+    image: ghcr.io/yinhui8888/kuaidi:latest
+    container_name: kuaidi-app
+    ports:
+      - "80:8000"
+    restart: always
