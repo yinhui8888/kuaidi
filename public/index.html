@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1677ff" />
+  <link rel="icon" href="data:," />
+  <title>易达寄件</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="page-header">
+      <div class="brand">
+        <span class="brand-logo">达</span>
+        <div>
+          <div class="brand-title">易达寄件</div>
+          <div class="brand-sub" id="modeTag">检查服务中…</div>
+        </div>
+      </div>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="create" role="tab">寄件下单</button>
+        <button class="tab" data-tab="orders" role="tab">我的订单</button>
+      </div>
+    </header>
+
+    <!-- ============ 寄件下单 ============ -->
+    <main id="tab-create" class="tab-panel active">
+      <!-- 第一步：填写信息 -->
+      <section id="step-form">
+        <div class="card parse-card">
+          <div class="parse-hint"><b>一键识别</b>　在聊天窗口把收货人 / 发货人信息一次性复制后，点下方按钮粘贴即可自动填入，例如：<br>
+            <span class="parse-eg">收货人：张三 13812345678 浙江省杭州市西湖区文三路138号<br>发货人：李四 13987654321 上海市浦东新区世纪大道100号</span>
+          </div>
+          <button id="pasteBtn" class="btn-ghost full">📋 粘贴并一键识别</button>
+        </div>
+        <div class="card">
+          <div class="card-head"><i class="dot dot-send"></i>寄件人</div>
+          <div class="field-row">
+            <div class="field"><label>省</label><input id="senderProvince" placeholder="例：浙江省" autocomplete="off"></div>
+            <div class="field"><label>市</label><input id="senderCity" placeholder="例：杭州市" autocomplete="off"></div>
+            <div class="field"><label>区/县</label><input id="senderDistrict" placeholder="例：西湖区" autocomplete="off"></div>
+          </div>
+          <div class="field"><label>详细地址</label><input id="senderAddress" placeholder="街道、门牌号（不含省市区）" autocomplete="off"></div>
+          <div class="field-row">
+            <div class="field"><label>姓名</label><input id="senderName" autocomplete="off"></div>
+            <div class="field"><label>手机号</label><input id="senderMobile" type="tel" inputmode="numeric" autocomplete="off"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="swap-row">
+            <div class="card-head inline"><i class="dot dot-recv"></i>收件人</div>
+            <button id="swapBtn" class="link-btn">⇅ 与寄件人互换</button>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>省</label><input id="receiveProvince" placeholder="例：上海市" autocomplete="off"></div>
+            <div class="field"><label>市</label><input id="receiveCity" placeholder="例：上海市" autocomplete="off"></div>
+            <div class="field"><label>区/县</label><input id="receiveDistrict" placeholder="例：浦东新区" autocomplete="off"></div>
+          </div>
+          <div class="field"><label>详细地址</label><input id="receiveAddress" placeholder="街道、门牌号（不含省市区）" autocomplete="off"></div>
+          <div class="field-row">
+            <div class="field"><label>姓名</label><input id="receiveName" autocomplete="off"></div>
+            <div class="field"><label>手机号</label><input id="receiveMobile" type="tel" inputmode="numeric" autocomplete="off"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><i class="dot dot-goods"></i>物品信息</div>
+          <div class="field-row">
+            <div class="field grow"><label>托寄物</label><input id="goods" placeholder="例：日用品" autocomplete="off"></div>
+            <div class="field"><label>件数</label><input id="packageCount" type="number" min="1" value="1" inputmode="numeric"></div>
+            <div class="field"><label>重量(kg)</label><input id="weight" type="number" step="0.01" min="0.01" value="1" inputmode="decimal"></div>
+          </div>
+          <details class="more">
+            <summary>体积 / 保价 / 备注（选填）</summary>
+            <div class="field-row">
+              <div class="field"><label>长(cm)</label><input id="vloumLong" type="number" min="0" inputmode="decimal"></div>
+              <div class="field"><label>宽(cm)</label><input id="vloumWidth" type="number" min="0" inputmode="decimal"></div>
+              <div class="field"><label>高(cm)</label><input id="vloumHeight" type="number" min="0" inputmode="decimal"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>保价金额(元)</label><input id="guaranteeValueAmount" type="number" min="0" step="1" placeholder="0" inputmode="decimal"></div>
+              <div class="field grow"><label>备注</label><input id="remark" autocomplete="off"></div>
+            </div>
+          </details>
+        </div>
+
+        <div class="btn-bar">
+          <button id="quoteBtn" class="btn-primary">估价并选择渠道</button>
+        </div>
+      </section>
+
+      <!-- 第二步：估价结果 -->
+      <section id="step-quote" class="hidden">
+        <div class="quote-head">
+          <button id="backToForm" class="link-btn">‹ 返回修改</button>
+          <b>选择快递渠道</b>
+          <span></span>
+        </div>
+        <div id="quoteList" class="quote-list"></div>
+
+        <div class="confirm-card">
+          <div class="fee-line">
+            <span>预估费用</span>
+            <b id="selFee">--</b>
+          </div>
+          <div class="fee-sub" id="selSub">请选择一个渠道</div>
+          <div class="field"><label>支付方式</label>
+            <select id="payMethodSel">
+              <option value="30">线上支付（余额）</option>
+              <option value="10">线下寄付（快递员现结）</option>
+              <option value="20">线下到付（收件人支付）</option>
+            </select>
+          </div>
+          <button id="orderBtn" class="btn-primary full" disabled>确认下单</button>
+        </div>
+      </section>
+
+      <!-- 第三步：下单结果 -->
+      <section id="step-done" class="hidden">
+        <div class="card done-card">
+          <div id="doneIcon" class="done-icon ok">✓</div>
+          <h3 id="doneTitle">下单成功</h3>
+          <dl class="kv" id="doneInfo"></dl>
+          <div class="btn-row">
+            <button id="traceBtn" class="btn-ghost">查物流到哪了</button>
+            <button id="cancelBtn" class="btn-danger-ghost">取消订单</button>
+          </div>
+          <button id="newOrderBtn" class="btn-primary full">再寄一单</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============ 我的订单 ============ -->
+    <main id="tab-orders" class="tab-panel">
+      <div id="orderListEmpty" class="empty">还没有订单，快去下一单吧 🚚</div>
+      <div id="orderList"></div>
+    </main>
+
+    <!-- ============ 粘贴识别弹层 ============ -->
+    <div id="pasteModal" class="modal hidden">
+      <div class="modal-mask"></div>
+      <div class="modal-body">
+        <div class="modal-head">
+          <b>粘贴收/发货人信息</b>
+          <button id="pasteCloseBtn" class="icon-btn">✕</button>
+        </div>
+        <div class="parse-hint">粘贴包含收货人和发货人两段信息的文本（换行或标签分隔均可）</div>
+        <textarea id="pasteText" class="paste-area" rows="6" placeholder="收货人：张三 13812345678 浙江省杭州市西湖区文三路138号
+发货人：李四 13987654321 上海市浦东新区世纪大道100号"></textarea>
+        <button id="pasteFillBtn" class="btn-primary full">识别并填入表单</button>
+        <button id="pasteClearBtn" class="btn-ghost full">清 空</button>
+      </div>
+    </div>
+
+    <!-- ============ 轨迹弹层 ============ -->
+    <div id="traceModal" class="modal hidden">
+      <div class="modal-mask"></div>
+      <div class="modal-body">
+        <div class="modal-head">
+          <b>物流轨迹</b>
+          <button id="traceClose" class="icon-btn">✕</button>
+        </div>
+        <div id="traceStatus" class="trace-status"></div>
+        <div id="traceList" class="trace-list"></div>
+        <button id="traceRefresh" class="btn-ghost full" style="margin-top:12px">刷新轨迹</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
